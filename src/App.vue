@@ -1,20 +1,21 @@
 <template>
     <div id="app">
-        <Home msg="Hello world!" />
+        <Board />
     </div>
 </template>
 
 <script>
-    import Home from './components/Home.vue';
+    import Board from './components/Board';
 
     export default {
         name: 'app',
         components: {
-            Home
+            Board
         }
     };
 </script>
 
-<style>
+<style lang="scss">
+
 </style>
 
