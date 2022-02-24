@@ -32,6 +32,43 @@
     <Content Include="public\favicon.ico" />
     <Content Include="public\index.html" />
     <Content Include="src\App.vue" />
+    <Content Include="src\assets\fontawesome\webfonts\fa-brands-400.ttf" />
+    <Content Include="src\assets\fontawesome\webfonts\fa-brands-400.woff2" />
+    <Content Include="src\assets\fontawesome\webfonts\fa-duotone-900.ttf" />
+    <Content Include="src\assets\fontawesome\webfonts\fa-duotone-900.woff2" />
+    <Content Include="src\assets\fontawesome\webfonts\fa-light-300.ttf" />
+    <Content Include="src\assets\fontawesome\webfonts\fa-light-300.woff2" />
+    <Content Include="src\assets\fontawesome\webfonts\fa-regular-400.ttf" />
+    <Content Include="src\assets\fontawesome\webfonts\fa-regular-400.woff2" />
+    <Content Include="src\assets\fontawesome\webfonts\fa-solid-900.ttf" />
+    <Content Include="src\assets\fontawesome\webfonts\fa-solid-900.woff2" />
+    <Content Include="src\assets\fontawesome\webfonts\fa-thin-100.ttf" />
+    <Content Include="src\assets\fontawesome\webfonts\fa-thin-100.woff2" />
+    <Content Include="src\assets\fontawesome\webfonts\fa-v4compatibility.ttf" />
+    <Content Include="src\assets\fontawesome\webfonts\fa-v4compatibility.woff2" />
+    <Content Include="src\assets\fontawesome\scss\brands.scss" />
+    <Content Include="src\assets\fontawesome\scss\duotone.scss" />
+    <Content Include="src\assets\fontawesome\scss\fontawesome.scss" />
+    <Content Include="src\assets\fontawesome\scss\light.scss" />
+    <Content Include="src\assets\fontawesome\scss\regular.scss" />
+    <Content Include="src\assets\fontawesome\scss\solid.scss" />
+    <Content Include="src\assets\fontawesome\scss\thin.scss" />
+    <Content Include="src\assets\fontawesome\scss\v4-shims.scss" />
+    <Content Include="src\assets\fontawesome\scss\_animated.scss" />
+    <Content Include="src\assets\fontawesome\scss\_bordered-pulled.scss" />
+    <Content Include="src\assets\fontawesome\scss\_core.scss" />
+    <Content Include="src\assets\fontawesome\scss\_duotone-icons.scss" />
+    <Content Include="src\assets\fontawesome\scss\_fixed-width.scss" />
+    <Content Include="src\assets\fontawesome\scss\_functions.scss" />
+    <Content Include="src\assets\fontawesome\scss\_icons.scss" />
+    <Content Include="src\assets\fontawesome\scss\_list.scss" />
+    <Content Include="src\assets\fontawesome\scss\_mixins.scss" />
+    <Content Include="src\assets\fontawesome\scss\_rotated-flipped.scss" />
+    <Content Include="src\assets\fontawesome\scss\_screen-reader.scss" />
+    <Content Include="src\assets\fontawesome\scss\_shims.scss" />
+    <Content Include="src\assets\fontawesome\scss\_sizing.scss" />
+    <Content Include="src\assets\fontawesome\scss\_stacked.scss" />
+    <Content Include="src\assets\fontawesome\scss\_variables.scss" />
     <Content Include="src\components\Board.vue" />
     <Content Include="package.json" />
     <Content Include="README.md" />
@@ -41,10 +78,16 @@
     <Folder Include="public\" />
     <Folder Include="src\" />
     <Folder Include="src\assets\" />
+    <Folder Include="src\assets\fontawesome\" />
+    <Folder Include="src\assets\fontawesome\webfonts\" />
+    <Folder Include="src\assets\fontawesome\scss\" />
     <Folder Include="src\components\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="babel.config.js" />
+    <Content Include="src\components\BoardTile.vue">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\main.js" />
   </ItemGroup>
   <PropertyGroup>
