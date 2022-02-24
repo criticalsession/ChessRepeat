@@ -4,13 +4,15 @@
             <div class="colDisplay tileMarker" v-if="colDisplay !== null">{{ colDisplay }}</div>
             <div class="rowDisplay tileMarker" v-if="rowDisplay !== null">{{ rowDisplay }}</div>
         </div>
-        <div class="piece" v-if="piece !== null && piece !== undefined" v-bind:class="{ 'white' : piece.color === 1 }">
+        <div class="piece" v-on:click="fireMovePiece()" v-if="hasPiece" v-bind:class="{ 'white' : piece.color === 1 }">
             <img :src="require('@/assets/pieces/' + pieceImage)" />
         </div>
     </div>
 </template>
 
 <script>
+    import PieceType from '../PieceType.js';
+
     export default {
         name: 'BoardTile',
         data() {
@@ -21,7 +23,10 @@
         methods: {
             alphabetFromNumber(number) {
                 return (number + 9).toString(36);
-            }
+            },
+            fireMovePiece() {
+                this.$emit('movePiece', this.piece);
+            },
         },
         props: {
             row: Number,
@@ -52,22 +57,22 @@
                     return null;
                 } else {
                     switch (this.piece.type) {
-                        case 1:
+                        case PieceType.PAWN:
                             pieceImage = 'pawn';
                             break;
-                        case 2:
+                        case PieceType.HORSEY:
                             pieceImage = 'horsey';
                             break;
-                        case 3:
+                        case PieceType.BISHOP:
                             pieceImage = 'bishop';
                             break;
-                        case 4:
+                        case PieceType.ROOK:
                             pieceImage = 'rook';
                             break;
-                        case 5:
+                        case PieceType.QUEEN:
                             pieceImage = 'queen';
                             break;
-                        case 6:
+                        case PieceType.KING:
                             pieceImage = 'king';
                             break;
                     }
@@ -76,6 +81,9 @@
                     pieceImage += '.png';
                     return pieceImage;
                 }
+            },
+            hasPiece() {
+                return this.piece !== null && this.piece !== undefined;
             },
         }
     };
@@ -122,6 +130,7 @@
             text-align: center;
             position: absolute;
             top: ($tileSize / 2) - ($pieceSize / 2);
+            cursor: pointer;
 
             img {
                 height: $pieceSize;
