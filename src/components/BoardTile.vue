@@ -27,20 +27,22 @@
             row: Number,
             column: Number,
             piece: Object,
+            povRow: Number,
+            povColumn: Number,
         },
         computed: {
             colDisplay() {
                 if (this.row !== 8) {
                     return null;
                 } else {
-                    return this.alphabetFromNumber(this.column);
+                    return this.alphabetFromNumber(this.povColumn);
                 }
             },
             rowDisplay() {
                 if (this.column !== 1) {
                     return null;
                 } else {
-                    return this.row;                    
+                    return this.povRow;
                 }
             },
             pieceImage() {

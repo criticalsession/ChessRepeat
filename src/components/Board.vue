@@ -1,7 +1,7 @@
 <template>
     <div class="board">
         <div v-for="i in 8" :key="i" class="row">
-            <BoardTile v-for="j in 8" :key="i + j" :row="i" :column="j" :piece="checkPiece(j, i)"></BoardTile>
+            <BoardTile v-for="j in 8" :key="i + j" :row="i" :column="j" :piece="checkPiece(j, i)" :povRow="pov === 0 ? i : 9 - i" :povColumn="pov === 1 ? j : 9 - j"></BoardTile>
         </div>
     </div>
 </template>
