@@ -66,7 +66,7 @@
 </script>
 
 <style scoped lang="scss">
-    $pieceSize: 60px;
+    $pieceSize: 50px;
     $tileSize: 70px;
 
     .tile {
