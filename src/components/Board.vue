@@ -1,13 +1,13 @@
 <template>
     <div class="board">
-        <div v-for="i in 8" :key="i" class="row">
-            <BoardTile v-for="j in 8" :key="i + j" :row="i" :column="j" :piece="checkPiece(j, i)" :povRow="pov === 0 ? i : 9 - i" :povColumn="pov === 1 ? j : 9 - j" v-on:movePiece="movePiece"></BoardTile>
-        </div>
+        <BoardTiles style="position: absolute; top: 0; left: 0;" :tileSize="tileSize" :pov="pov" />
+        <Pieces style="position: absolute; top: 0; left: 0;" :pov="pov" :pieces="pieces" />
     </div>
 </template>
 
 <script>
-    import BoardTile from './BoardTile.vue';
+    import BoardTiles from './BoardTiles.vue';
+    import Pieces from './Pieces.vue';
     import PieceType from '../PieceType.js';
     import FENReader from '../FENReader.js';
 
@@ -18,23 +18,17 @@
             FEN: String,
         },
         components: {
-            BoardTile,
+            BoardTiles,
+            Pieces,
         },
         data() {
             return {
                 whiteToPlay: true,
-                pieces: [ ],
+                pieces: [],
+                tileSize: 70,
             }
         },
         methods: {
-            checkPiece(x, y) {
-                let foundPieces = this.pieces.filter(item => {
-                    return item.positionX === (this.pov === 1 ? x : 9 - x) && item.positionY === (this.pov === 1 ? y : 9 - y);
-                });
-
-                if (foundPieces.length > 0) return foundPieces[0];
-                else return null;
-            },
             loadFEN() {
                 if (this.FEN.length > 0) {
                     let reader = new FENReader();
@@ -65,8 +59,12 @@
 </script>
 
 <style scoped lang="scss">
-    .row {
-        clear: both;
+    $tileSize: 70px;
+
+    .board {
+        position: relative;
+        width: $tileSize * 8;
+        height: $tileSize * 8;
     }
 </style>
 

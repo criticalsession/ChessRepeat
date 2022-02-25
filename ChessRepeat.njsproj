@@ -72,6 +72,15 @@
     <Content Include="src\components\Board.vue" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="src\components\BoardTiles.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\PieceImage.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\Pieces.vue">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\PieceType.js">
       <SubType>Code</SubType>
     </Content>

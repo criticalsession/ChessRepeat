@@ -1,7 +1,7 @@
 <template>
     <div id="app">
         <Board :pov="pov" :FEN="FEN" />
-        <div style="clear: both; padding-top: 20px;">
+        <div style="top: 20px; position: relative;">
             <button @click="switchPOV()">Flip</button> <button @click="FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'">Start Position</button>
             FEN: <input v-model="FEN" style="width: 400px;" />
         </div>

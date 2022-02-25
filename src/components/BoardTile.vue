@@ -1,18 +1,13 @@
 <template>
     <div class="tile" v-bind:class="{ 'white' : (column + row) % 2 === 0 }">
         <div v-if="column === 1 || row === 8">
-            <div class="colDisplay tileMarker" v-if="colDisplay !== null">{{ colDisplay }}</div>
-            <div class="rowDisplay tileMarker" v-if="rowDisplay !== null">{{ rowDisplay }}</div>
-        </div>
-        <div class="piece" v-on:click="fireMovePiece()" v-if="hasPiece" v-bind:class="{ 'white' : piece.color === 1 }">
-            <img :src="require('@/assets/pieces/' + pieceImage)" />
+            <div class="colDisplay tileMarker">{{ colDisplay }}</div>
+            <div class="rowDisplay tileMarker">{{ rowDisplay }}</div>
         </div>
     </div>
 </template>
 
 <script>
-    import PieceType from '../PieceType.js';
-
     export default {
         name: 'BoardTile',
         data() {
@@ -24,16 +19,11 @@
             alphabetFromNumber(number) {
                 return (number + 9).toString(36);
             },
-            fireMovePiece() {
-                this.$emit('movePiece', this.piece);
-            },
         },
         props: {
             row: Number,
             column: Number,
-            piece: Object,
-            povRow: Number,
-            povColumn: Number,
+            pov: Number,
         },
         computed: {
             colDisplay() {
@@ -50,40 +40,11 @@
                     return this.povRow;
                 }
             },
-            pieceImage() {
-                let pieceImage = '';
-
-                if (this.piece === null || this.piece === undefined) {
-                    return null;
-                } else {
-                    switch (this.piece.type) {
-                        case PieceType.PAWN:
-                            pieceImage = 'pawn';
-                            break;
-                        case PieceType.HORSEY:
-                            pieceImage = 'horsey';
-                            break;
-                        case PieceType.BISHOP:
-                            pieceImage = 'bishop';
-                            break;
-                        case PieceType.ROOK:
-                            pieceImage = 'rook';
-                            break;
-                        case PieceType.QUEEN:
-                            pieceImage = 'queen';
-                            break;
-                        case PieceType.KING:
-                            pieceImage = 'king';
-                            break;
-                    }
-
-                    if (this.piece.color === 1) pieceImage += '_w';
-                    pieceImage += '.png';
-                    return pieceImage;
-                }
+            povRow() {
+                return this.pov === 0 ? this.row : 9 - this.row;
             },
-            hasPiece() {
-                return this.piece !== null && this.piece !== undefined;
+            povColumn() {
+                return this.pov === 1 ? this.column : 9 - this.column;
             },
         }
     };
@@ -93,7 +54,6 @@
     $tileSize : 70px;
     $backgroundColorBlack : #769656;
     $backgroundColorWhite : #EEEED2;
-    $pieceSize : 60px;
 
     .tile {
         user-select: none;
@@ -121,25 +81,6 @@
 
         .colDisplay {
             top: $tileSize - 20;
-        }
-
-        .piece {
-            font-size: $pieceSize;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            position: absolute;
-            top: ($tileSize / 2) - ($pieceSize / 2);
-            cursor: pointer;
-
-            img {
-                height: $pieceSize;
-                -webkit-user-drag: none;
-                -khtml-user-drag: none;
-                -moz-user-drag: none;
-                -o-user-drag: none;
-                user-drag: none;
-            }
         }
     }
 </style>
