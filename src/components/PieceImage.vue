@@ -1,5 +1,5 @@
 <template>
-    <div class="tile">
+    <div class="tile" v-bind:class="{ 'selected' : (piece === null ? false : piece.isSelected), 'clickable' : piece !== null, 'hasPrevious' : hasPrevious, 'lastMoved' : piece !== null && piece.previousPosition.length > 0 }" v-on:click="selectTile">
         <div class="piece" v-if="piece !== null">
             <img :src="require('@/assets/pieces/' + getImage())" />
         </div>
@@ -13,6 +13,7 @@
         name: 'PieceImage',
         props: {
             piece: Object,
+            hasPrevious: Boolean,
         },
         components: {
 
@@ -55,6 +56,15 @@
                     return img;
                 }
             },
+            selectTile() {
+                if (this.piece === null) {
+                    //selected empty tile
+                    this.$emit('tryMovePiece');
+                } else {
+                    //selected a piece
+                    this.$emit('pieceSelected', this.piece.isSelected ? null : this.piece);
+                }
+            }
         },
         watch: {
 
@@ -66,8 +76,10 @@
 </script>
 
 <style scoped lang="scss">
-    $pieceSize: 50px;
+    $pieceSize: 55px;
     $tileSize: 70px;
+    $backgroundColorSelected: #e9d854;
+    $previousTile: #acf3b0;
 
     .tile {
         float: left;
@@ -75,13 +87,28 @@
         height: $tileSize;
         position: relative;
 
+        &.clickable {
+            cursor: pointer;
+        }
+
+        &.hasPrevious {
+            background-color: $previousTile;
+        }
+
+        &.lastMoved {
+            background-color: $previousTile * 0.8;
+        }
+
+        &.selected {
+            background-color: $backgroundColorSelected;
+        }
+
         .piece {
             width: 100%;
             height: 100%;
             text-align: center;
             position: absolute;
             top: ($tileSize / 2) - ($pieceSize / 2);
-            cursor: pointer;
 
             img {
                 height: $pieceSize;

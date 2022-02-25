@@ -76,6 +76,8 @@ export default class FENReader {
             positionY: y,
             type: type,
             color: color,
+            isSelected: false,
+            previousPosition: [],
         }
     }
 }
