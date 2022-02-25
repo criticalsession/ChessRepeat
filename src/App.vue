@@ -1,8 +1,8 @@
 <template>
     <div id="app">
-        <Board :pov="pov" :FEN="FEN" />
+        <Board ref="board" :pov="pov" :FEN="FEN" />
         <div style="top: 20px; position: relative;">
-            <button @click="switchPOV()">Flip</button> <button @click="FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'">Start Position</button>
+            <button @click="switchPOV()">Flip</button> <button @click="setFEN('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR')">Start Position</button>
             FEN: <input v-model="FEN" style="width: 400px;" />
         </div>
     </div>
@@ -19,14 +19,25 @@
             switchPOV() {
                 this.pov = this.pov === 1 ? 0 : 1;
             },
+            setFEN(f) {
+                this.FEN = f;
+                this.$refs['board'].loadFEN(this.FEN);
+            },
         },
         data() {
             return {
                 pov: 1,
-                FEN: 'r1b1k1nr/p2p1pNp/n2B4/1p1NP2P/6P1/3P1Q2/P1P1K3/q5b1',
-                whiteToMove: true,
+                FEN: '',
             };
         },
+        watch: {
+            FEN() {
+                this.$refs['board'].loadFEN(this.FEN);
+            }
+        },
+        mounted() {
+            this.setFEN('r1b1k1nr/p2p1pNp/n2B4/1p1NP2P/6P1/3P1Q2/P1P1K3/q5b1')
+        }
     };
 </script>
 

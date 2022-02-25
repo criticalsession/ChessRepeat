@@ -57,13 +57,7 @@
                 }
             },
             selectTile() {
-                if (this.piece === null) {
-                    //selected empty tile
-                    this.$emit('tryMovePiece');
-                } else {
-                    //selected a piece
-                    this.$emit('pieceSelected', this.piece.isSelected ? null : this.piece);
-                }
+                this.$emit('tileClicked', this.piece);
             }
         },
         watch: {

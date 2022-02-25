@@ -1,7 +1,7 @@
 <template>
     <div class="board">
         <BoardTiles style="position: absolute; top: 0; left: 0;" :tileSize="tileSize" :pov="pov" />
-        <Pieces style="position: absolute; top: 0; left: 0;" :pov="pov" :pieces="pieces" :whiteToMove="whiteToMove" />
+        <Pieces ref="piecesHandler" style="position: absolute; top: 0; left: 0;" :pov="pov" :pieceList="pieces" :startWhiteToMove="whiteToMove" v-on:updatedPieceList="updatePieces" />
     </div>
 </template>
 
@@ -14,7 +14,6 @@
         name: 'Board',
         props: {
             pov: Number,
-            FEN: String,
         },
         components: {
             BoardTiles,
@@ -28,23 +27,27 @@
             }
         },
         methods: {
-            loadFEN() {
-                if (this.FEN.length > 0) {
+            loadFEN(f) {
+                if (f.length > 0) {
                     let reader = new FENReader();
-                    this.pieces = reader.convert(this.FEN);
+                    this.pieces = reader.convert(f);
                 }
 
                 //todo: player to move from FEN
                 this.whiteToMove = true;
+
+                this.$refs['piecesHandler'].reset(this.pieces, this.whiteToMove);
             },
-        },
-        watch: {
-            FEN() {
-                this.loadFEN();
+            updatePieces(pieces, whiteToMove) {
+                this.pieces = pieces;
+                this.whiteToMove = whiteToMove;
             }
         },
+        watch: {
+
+        },
         mounted() {
-            this.loadFEN();
+
         },
     };
 </script>

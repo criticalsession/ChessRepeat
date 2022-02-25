@@ -78,6 +78,8 @@ export default class FENReader {
             color: color,
             isSelected: false,
             previousPosition: [],
+            movedOnce: false,
+            captured: false,
         }
     }
 }
