@@ -7,11 +7,11 @@
 
 <script>
     import BoardTiles from './BoardTiles.vue';
-    import Pieces from './Pieces.vue';
+    import Pieces from './PiecesManager.vue';
     import FENReader from '../FENReader.js';
 
     export default {
-        name: 'Board',
+        name: 'BoardContainer',
         props: {
             pov: Number,
         },

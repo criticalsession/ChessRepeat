@@ -90,7 +90,7 @@
         }
 
         &.lastMoved {
-            background-color: $previousTile * 0.8;
+            background-color: $previousTile;
         }
 
         &.selected {

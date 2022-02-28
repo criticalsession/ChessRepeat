@@ -7,24 +7,26 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
-  "description": "ChessRepeat",
+  "description": "ChessRepeat allows you to store chess lines and practice them by repetition.",
   "author": {
-    "name": ""
+    "name": "Critical Session"
   },
   "dependencies": {
-    "vue": "2.6.12"
+    "core-js": "^3.8.3",
+    "sass": "^1.49.9",
+    "vue": "^2.6.14"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "4.5.13",
-    "@vue/cli-plugin-eslint": "4.5.13",
-    "@vue/cli-service": "4.5.13",
-    "babel-eslint": "10.1.0",
-    "eslint": "6.8.0",
-    "eslint-plugin-vue": "6.2.2",
+    "@babel/core": "^7.12.16",
+    "@babel/eslint-parser": "^7.12.16",
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-vue": "^8.0.3",
     "file-loader": "^6.2.0",
-    "node-sass": "4.14.1",
     "sass-loader": "10.1.1",
-    "vue-template-compiler": "2.6.12"
+    "vue-template-compiler": "^2.6.14"
   },
   "eslintConfig": {
     "root": true,
@@ -35,11 +37,10 @@
       "plugin:vue/essential",
       "eslint:recommended"
     ],
-    "rules": {
-    },
     "parserOptions": {
-      "parser": "babel-eslint"
-    }
+      "parser": "@babel/eslint-parser"
+    },
+    "rules": {}
   },
   "postcss": {
     "plugins": {
@@ -49,6 +50,6 @@
   "browserslist": [
     "> 1%",
     "last 2 versions",
-    "not ie <= 8"
+    "not dead"
   ]
 }

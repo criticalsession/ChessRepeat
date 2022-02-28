@@ -10,7 +10,7 @@
     import PieceImage from './PieceImage.vue';
 
     export default {
-        name: 'Pieces',
+        name: 'PiecesManager',
         props: {
             pov: Number,
         },
