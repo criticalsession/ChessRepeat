@@ -8,6 +8,7 @@
 
 <script>
     import PieceImage from './PieceImage.vue';
+    import Movement from '../Movement.js';
 
     export default {
         name: 'PiecesManager',
@@ -21,6 +22,8 @@
             return {
                 pieces: [],
                 whiteToMove: true,
+                possibleMoves: [],
+                moveManager: null,
             }
         },
         methods: {
@@ -56,17 +59,21 @@
                 if (piece !== null && this.pieceCorrectColor(piece)) { //if my piece, select it
                     this.clearSelections();
                     piece.isSelected = true;
+                    this.highlightPossibleMoves(piece);
                 } else if (selectedPiece !== null) {
                     this.tryMovePiece(x, y, selectedPiece);
                 }
 
                 this.$emit('updatePieceList', this.pieces, this.whiteToMove);
             },
+            highlightPossibleMoves(piece) {
+                const positions = this.moveManager.getMovePositions(piece);
+                this.possibleMoves = positions;
+            },
             capturePiece(toCapture) {
                 toCapture.captured = true;
             },
             tryMovePiece(x, y, piece) {
-                //todo: check can move
                 let pieceOnTargetTile = this.getPiece(x, y);
 
                 if (pieceOnTargetTile !== null) this.capturePiece(pieceOnTargetTile); // capture
@@ -119,7 +126,7 @@
 
         },
         mounted() {
-
+            this.moveManager = new Movement();
         },
     };
 </script>

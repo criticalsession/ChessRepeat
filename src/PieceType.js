@@ -29,4 +29,8 @@ export default class PieceType {
     isKing(p) {
         return p.type === PieceType.KING;
     }
+
+    isWhite(p) {
+        return p.color === 1;
+    }
 }
