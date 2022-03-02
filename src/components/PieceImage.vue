@@ -1,7 +1,9 @@
 <template>
-    <div class="tile" v-bind:class="{ 'selected' : (piece === null ? false : piece.isSelected), 'clickable' : piece !== null, 'hasPrevious' : hasPrevious, 'lastMoved' : piece !== null && piece.previousPosition.length > 0 }" v-on:click="selectTile">
-        <div class="piece" v-if="piece !== null">
-            <img :src="require('@/assets/pieces/' + getImage())" />
+    <div class="tile" 
+         v-on:click="selectTile"
+         v-bind:style="getPosition()">
+        <div class="piece" v-if="piece !== null && !piece.captured" v-bind:style="piecePosition">
+            <img :src="require('@/assets/pieces/' + getImage())" v-bind:style="pieceImageHeight" />
         </div>
     </div>
 </template>
@@ -14,6 +16,9 @@
         props: {
             piece: Object,
             hasPrevious: Boolean,
+            pov: Number,
+            allowAnimate: Boolean,
+            tileSize: Number,
         },
         components: {
 
@@ -58,6 +63,36 @@
             },
             selectTile() {
                 this.$emit('tileClicked', this.piece);
+            },
+            getPosition() {
+                return {
+                    top: ((this.povY - 1) * this.tileSize) + 'px',
+                    left: ((this.povX - 1) * this.tileSize) + 'px',
+                    'z-index': new PieceType().isHorsey(this.piece) ? 8 : 6, // always put knights on top as they can 'jump'
+                    transition: this.allowAnimate ? 'all 0.2s' : 'none',
+                    width: this.tileSize + 'px',
+                    height: this.tileSize + 'px',
+                };
+            },
+        },
+        computed: {
+            povX() {
+                if (this.pov === 1) return this.piece.positionX;
+                else return 9 - this.piece.positionX;
+            },
+            povY() {
+                if (this.pov === 1) return this.piece.positionY;
+                else return 9 - this.piece.positionY;
+            },
+            piecePosition() {
+                return {
+                    top: ((this.tileSize / 2) - (this.tileSize / 2.5)) + 'px',
+                }
+            },
+            pieceImageHeight() {
+                return {
+                    height: (this.tileSize / 1.25) + 'px',
+                }
             }
         },
         watch: {
@@ -70,42 +105,20 @@
 </script>
 
 <style scoped lang="scss">
-    $pieceSize: 55px;
-    $tileSize: 70px;
     $backgroundColorSelected: #e9d854;
     $previousTile: #acf3b0;
 
     .tile {
-        float: left;
-        width: $tileSize;
-        height: $tileSize;
-        position: relative;
-
-        &.clickable {
-            cursor: pointer;
-        }
-
-        &.hasPrevious {
-            background-color: $previousTile;
-        }
-
-        &.lastMoved {
-            background-color: $previousTile;
-        }
-
-        &.selected {
-            background-color: $backgroundColorSelected;
-        }
+        position: absolute;
+        pointer-events: none;
 
         .piece {
             width: 100%;
             height: 100%;
             text-align: center;
             position: absolute;
-            top: ($tileSize / 2) - ($pieceSize / 2);
 
             img {
-                height: $pieceSize;
                 -webkit-user-drag: none;
                 -khtml-user-drag: none;
                 -moz-user-drag: none;

@@ -1,7 +1,7 @@
 <template>
     <section>
         <div v-for="i in 8" :key="i" class="row">
-            <BoardTile v-for="j in 8" :key="i + j" :row="i" :column="j" :pov="pov"></BoardTile>
+            <BoardTile v-for="j in 8" :key="i + j" :row="i" :column="j" :pov="pov" :tileSize="tileSize" ></BoardTile>
         </div>
     </section>
 </template>
@@ -13,6 +13,7 @@
         name: 'BoardTiles',
         props: {
             pov: Number,
+            tileSize: Number,
         },
         components: {
             BoardTile,

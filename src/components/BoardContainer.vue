@@ -1,7 +1,18 @@
 <template>
-    <div class="board">
-        <BoardTiles style="position: absolute; top: 0; left: 0;" :tileSize="tileSize" :pov="pov" />
-        <Pieces ref="piecesHandler" style="position: absolute; top: 0; left: 0;" :pov="pov" :pieceList="pieces" :startWhiteToMove="whiteToMove" v-on:updatedPieceList="updatePieces" />
+    <div class="board" v-bind:style="boardWidthHeight">
+        <BoardTiles 
+            style="position: absolute; top: 0; left: 0;" 
+            :tileSize="tileSize" 
+            :pov="pov" />
+        <Pieces 
+            ref="piecesHandler" 
+            style="position: absolute; top: 0; left: 0;" 
+            :pov="pov" 
+            :tileSize="tileSize" 
+            :pieceList="pieces" 
+            :startWhiteToMove="whiteToMove" 
+            v-on:updatedPieceList="updatePieces" 
+            :allowAnimate="animatePieces" />
     </div>
 </template>
 
@@ -14,6 +25,7 @@
         name: 'BoardContainer',
         props: {
             pov: Number,
+            tileSize: Number,
         },
         components: {
             BoardTiles,
@@ -23,7 +35,7 @@
             return {
                 whiteToMove: true,
                 pieces: [],
-                tileSize: 70,
+                animatePieces: true,
             }
         },
         methods: {
@@ -35,16 +47,35 @@
 
                 //todo: player to move from FEN
                 this.whiteToMove = true;
-
+                this.pauseAnimation();
                 this.$refs['piecesHandler'].reset(this.pieces, this.whiteToMove);
             },
             updatePieces(pieces, whiteToMove) {
                 this.pieces = pieces;
                 this.whiteToMove = whiteToMove;
+            },
+            pauseAnimation() {
+                this.animatePieces = false;
+                setTimeout(() => {
+                    this.animatePieces = true;
+                }, 500);
+            }
+        },
+        computed: {
+            boardWidthHeight() {
+                return {
+                    width: (this.tileSize * 8) + 'px',
+                    height: (this.tileSize * 8) + 'px',
+                }
             }
         },
         watch: {
-
+            pov() {
+                this.pauseAnimation();
+            },
+            tileSize() {
+                this.pauseAnimation();
+            },
         },
         mounted() {
 
@@ -53,12 +84,8 @@
 </script>
 
 <style lang="scss">
-    $tileSize: 70px;
-
     .board {
         position: relative;
-        width: $tileSize * 8;
-        height: $tileSize * 8;
     }
 </style>
 

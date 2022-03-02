@@ -1,39 +1,62 @@
 <template>
     <section>
-        <div v-for="y in 8" :key="y" class="row">
-            <PieceImage v-for="x in 8" :key="x + y" :piece="getPiece(x, y)" :hasPrevious="findPrevious(x, y)" v-on:tileClicked="tileClicked(x, y)"></PieceImage>
-        </div>
+        <TileTarget v-for="p in (8*8)"
+                    :key="'tile' + p"
+                    v-on:tileClicked="tileClicked(p)"
+                    :coords="getCoords64(p)" 
+                    :hasPrevious="findPrevious(p)"
+                    :hasLastMoved="findLastMoved(p)" 
+                    :isSelected="isTileSelected(p)" 
+                    :allowAnimate="allowAnimate" 
+                    :tileSize="tileSize" />
+        <PieceImage v-for="(piece,index) in pieces" 
+                    :key="'piece' + index" 
+                    :piece="piece" 
+                    :pov="pov" 
+                    :allowAnimate="allowAnimate" 
+                    :tileSize="tileSize" />
     </section>
 </template>
 
 <script>
     import PieceImage from './PieceImage.vue';
-    import Movement from '../Movement.js';
+    import TileTarget from './TileTarget.vue';
 
     export default {
         name: 'PiecesManager',
         props: {
             pov: Number,
+            allowAnimate: Boolean,
+            tileSize: Number,
         },
         components: {
             PieceImage,
+            TileTarget,
         },
         data() {
             return {
                 pieces: [],
                 whiteToMove: true,
-                possibleMoves: [],
-                moveManager: null,
             }
         },
         methods: {
+            getTileRef(p) {
+                return 'tile' + p;
+            },
             reset(pieces, whiteToMove) {
                 this.pieces = pieces;
                 this.whiteToMove = whiteToMove;
             },
+            getCoords64(p) {
+                p = p - 1; //make 0-based
+                const x = (p % 8) + 1;
+                const y = parseInt(p / 8) + 1;
+
+                return { x, y };
+            },
             getPiece(x, y) {
-                let foundPieces = this.pieces.filter(item => {
-                    return item.positionX === (this.pov === 1 ? x : 9 - x) && item.positionY === (this.pov === 1 ? y : 9 - y) && !item.captured;
+                let foundPieces = this.activePieces.filter(item => {
+                    return item.positionX === (this.pov === 1 ? x : 9 - x) && item.positionY === (this.pov === 1 ? y : 9 - y);
                 });
 
                 if (foundPieces.length > 0) return foundPieces[0];
@@ -47,33 +70,32 @@
             clearPreviousPositions() {
                 this.pieces.forEach(p => {
                     p.previousPosition = [];
+                    p.lastMoved = false;
                 });
             },
             pieceCorrectColor(piece) {
                 return ((piece.color === 0 && !this.whiteToMove) || (piece.color === 1 && this.whiteToMove));
             },
-            tileClicked(x, y) {
-                let piece = this.getPiece(x, y);
+            tileClicked(p64) {
+                const coords = this.getCoords64(p64);
+
+                let piece = this.getPiece(coords.x, coords.y);
                 let selectedPiece = this.selectedPiece;
 
                 if (piece !== null && this.pieceCorrectColor(piece)) { //if my piece, select it
                     this.clearSelections();
                     piece.isSelected = true;
-                    this.highlightPossibleMoves(piece);
                 } else if (selectedPiece !== null) {
-                    this.tryMovePiece(x, y, selectedPiece);
+                    this.tryMovePiece(coords.x, coords.y, selectedPiece);
                 }
 
                 this.$emit('updatePieceList', this.pieces, this.whiteToMove);
-            },
-            highlightPossibleMoves(piece) {
-                const positions = this.moveManager.getMovePositions(piece);
-                this.possibleMoves = positions;
             },
             capturePiece(toCapture) {
                 toCapture.captured = true;
             },
             tryMovePiece(x, y, piece) {
+                //todo: check can move
                 let pieceOnTargetTile = this.getPiece(x, y);
 
                 if (pieceOnTargetTile !== null) this.capturePiece(pieceOnTargetTile); // capture
@@ -89,6 +111,8 @@
                     piece.positionX = coords[0];
                     piece.positionY = coords[1];
                     piece.movedOnce = true;
+
+                    piece.lastMoved = true;
                 }
 
                 this.clearSelections();
@@ -108,11 +132,25 @@
 
                 return coords;
             },
-            findPrevious(x, y) {
-                let found = this.pieces.filter(p => p.previousPosition[0] === this.adjustToAbsolute(x) && p.previousPosition[1] === this.adjustToAbsolute(y));
+            findPrevious(p64) {
+                const coords = this.getCoords64(p64);
+                let found = this.pieces.filter(p => p.previousPosition[0] === this.adjustToAbsolute(coords.x) && p.previousPosition[1] === this.adjustToAbsolute(coords.y));
 
-                if (found.length === 0) return false;
-                else return true;
+                return found.length > 0;
+            },
+            findLastMoved(p64) {
+                const coords = this.getCoords64(p64);
+                let found = this.pieces.filter(p => p.positionX === this.adjustToAbsolute(coords.x) && p.positionY === this.adjustToAbsolute(coords.y) && p.lastMoved);
+
+                return found.length > 0;
+            },
+            isTileSelected(p64) {
+                if (this.selectedPiece !== null) {
+                    const coords = this.getCoords64(p64);
+                    let found = this.pieces.filter(p => p.positionX === this.adjustToAbsolute(coords.x) && p.positionY === this.adjustToAbsolute(coords.y) && p.isSelected);
+
+                    return found.length > 0;
+                }
             }
         },
         computed: {
@@ -121,19 +159,20 @@
                 if (selected.length === 0) return null;
                 else return selected[0];
             },
+            activePieces() {
+                return this.pieces.filter(p => !p.captured);
+            },
         },
         watch: {
 
         },
         mounted() {
-            this.moveManager = new Movement();
+
         },
     };
 </script>
 
 <style scoped lang="scss">
-    .row {
-        clear: both;
-    }
+
 </style>
 

@@ -1,9 +1,10 @@
 <template>
     <div id="app">
-        <Board ref="board" :pov="pov" :FEN="FEN" />
+        <Board ref="board" :pov="pov" :FEN="FEN" :tileSize="tileSize" />
         <div style="top: 20px; position: relative;">
             <button @click="switchPOV()">Flip</button> <button @click="setFEN('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR')">Start Position</button>
-            FEN: <input v-model="FEN" style="width: 400px;" />
+            FEN: <input v-model="FEN" style="width: 400px;" /><br /><br />
+            Size: <button @click="tileSize = 50">Small</button> <button @click="tileSize = 70">Medium</button> <button @click="tileSize = 90">Large</button>
         </div>
     </div>
 </template>
@@ -28,6 +29,7 @@
             return {
                 pov: 1,
                 FEN: '',
+                tileSize: 70,
             };
         },
         watch: {

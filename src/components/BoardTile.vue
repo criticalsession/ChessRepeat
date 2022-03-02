@@ -1,7 +1,7 @@
 <template>
-    <div class="tile" v-bind:class="{ 'white' : (column + row) % 2 === 0 }">
+    <div class="tile" v-bind:class="{ 'white' : (column + row) % 2 === 0 }" v-bind:style="sizeStyle">
         <div v-if="column === 1 || row === 8">
-            <div class="colDisplay tileMarker">{{ colDisplay }}</div>
+            <div class="colDisplay tileMarker" v-bind="colDisplayTopStyle">{{ colDisplay }}</div>
             <div class="rowDisplay tileMarker">{{ rowDisplay }}</div>
         </div>
     </div>
@@ -24,6 +24,7 @@
             row: Number,
             column: Number,
             pov: Number,
+            tileSize: Number,
         },
         computed: {
             colDisplay() {
@@ -46,20 +47,28 @@
             povColumn() {
                 return this.pov === 1 ? this.column : 9 - this.column;
             },
+            sizeStyle() {
+                return {
+                    width: this.tileSize + 'px',
+                    height: this.tileSize + 'px',
+                };
+            },
+            colDisplayTopStyle() {
+                return {
+                    top: (this.tileSize - 20) + 'px',
+                }
+            }
         }
     };
 </script>
 
 <style scoped lang="scss">
-    $tileSize : 70px;
     $backgroundColorBlack : #769656;
     $backgroundColorWhite : #EEEED2;
 
     .tile {
         user-select: none;
         background-color: $backgroundColorBlack;
-        width: $tileSize;
-        height: $tileSize;
         float: left;
         position: relative;
 
@@ -77,10 +86,6 @@
             .tileMarker {
                 color: $backgroundColorBlack;
             }
-        }
-
-        .colDisplay {
-            top: $tileSize - 20;
         }
     }
 </style>
