@@ -6,7 +6,7 @@
                     :coords="getCoords64(p)" 
                     :allowAnimate="allowAnimate" 
                     :pov="pov"
-                    :pieces="pieces"
+                    :pieces="activePieces"
                     :tileSize="tileSize" 
                     :possibleMoves="possibleMoves"
                     :pieceIsSelected="selectedPiece !== null" 
