@@ -4,11 +4,12 @@
                     :key="'tile' + p"
                     v-on:tileClicked="tileClicked(p)"
                     :coords="getCoords64(p)" 
-                    :hasPrevious="findPrevious(p)"
-                    :hasLastMoved="findLastMoved(p)" 
-                    :isSelected="isTileSelected(p)" 
                     :allowAnimate="allowAnimate" 
-                    :tileSize="tileSize" />
+                    :pov="pov"
+                    :pieces="pieces"
+                    :tileSize="tileSize" 
+                    :possibleMoves="possibleMoves"
+                    :pieceIsSelected="selectedPiece !== null" />
         <PieceImage v-for="(piece,index) in pieces" 
                     :key="'piece' + index" 
                     :piece="piece" 
@@ -21,6 +22,8 @@
 <script>
     import PieceImage from './PieceImage.vue';
     import TileTarget from './TileTarget.vue';
+    import Movement from '../Movement.js';
+    import PieceType from '../PieceType.js';
 
     export default {
         name: 'PiecesManager',
@@ -37,6 +40,8 @@
             return {
                 pieces: [],
                 whiteToMove: true,
+                moveManager: null,
+                possibleMoves: [],
             }
         },
         methods: {
@@ -85,11 +90,15 @@
                 if (piece !== null && this.pieceCorrectColor(piece)) { //if my piece, select it
                     this.clearSelections();
                     piece.isSelected = true;
+                    this.highlightPossibleMoves(piece);
                 } else if (selectedPiece !== null) {
                     this.tryMovePiece(coords.x, coords.y, selectedPiece);
                 }
 
                 this.$emit('updatePieceList', this.pieces, this.whiteToMove);
+            },
+            highlightPossibleMoves(piece) {
+                this.possibleMoves = this.moveManager.getMovePositions(piece);
             },
             capturePiece(toCapture) {
                 toCapture.captured = true;
@@ -115,13 +124,12 @@
                     piece.lastMoved = true;
                 }
 
+                if (this.moveManager.shouldPromote(piece)) {
+                    piece.type = PieceType.QUEEN;
+                }
+
                 this.clearSelections();
                 this.whiteToMove = !this.whiteToMove;
-            },
-            adjustToAbsolute(p) {
-                if (this.pov === 0) {
-                    return 9 - p;
-                } else return p;
             },
             adjustXYToAbsolute(x, y) {
                 let coords = [x, y];
@@ -132,26 +140,6 @@
 
                 return coords;
             },
-            findPrevious(p64) {
-                const coords = this.getCoords64(p64);
-                let found = this.pieces.filter(p => p.previousPosition[0] === this.adjustToAbsolute(coords.x) && p.previousPosition[1] === this.adjustToAbsolute(coords.y));
-
-                return found.length > 0;
-            },
-            findLastMoved(p64) {
-                const coords = this.getCoords64(p64);
-                let found = this.pieces.filter(p => p.positionX === this.adjustToAbsolute(coords.x) && p.positionY === this.adjustToAbsolute(coords.y) && p.lastMoved);
-
-                return found.length > 0;
-            },
-            isTileSelected(p64) {
-                if (this.selectedPiece !== null) {
-                    const coords = this.getCoords64(p64);
-                    let found = this.pieces.filter(p => p.positionX === this.adjustToAbsolute(coords.x) && p.positionY === this.adjustToAbsolute(coords.y) && p.isSelected);
-
-                    return found.length > 0;
-                }
-            }
         },
         computed: {
             selectedPiece() {
@@ -167,7 +155,7 @@
 
         },
         mounted() {
-
+            this.moveManager = new Movement();
         },
     };
 </script>

@@ -36,4 +36,9 @@ export default class Movement {
 
         return movePositions;
     }
+
+    shouldPromote(piece) {
+        const pt = new PieceType();
+        return (pt.isPawn(piece)) && ((pt.isWhite(piece) && piece.positionY === 1) || (!pt.isWhite(piece) && piece.positionY === 8));
+    }
 }
