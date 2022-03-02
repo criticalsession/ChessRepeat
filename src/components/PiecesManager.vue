@@ -9,7 +9,8 @@
                     :pieces="pieces"
                     :tileSize="tileSize" 
                     :possibleMoves="possibleMoves"
-                    :pieceIsSelected="selectedPiece !== null" />
+                    :pieceIsSelected="selectedPiece !== null" 
+                    :colorPlaying="whiteToMove ? 1 : 0" />
         <PieceImage v-for="(piece,index) in pieces" 
                     :key="'piece' + index" 
                     :piece="piece" 
@@ -70,7 +71,9 @@
             clearSelections() {
                 this.pieces.forEach(p => {
                     p.isSelected = false;
-                })
+                });
+
+                this.possibleMoves = [];
             },
             clearPreviousPositions() {
                 this.pieces.forEach(p => {
@@ -90,25 +93,36 @@
                 if (piece !== null && this.pieceCorrectColor(piece)) { //if my piece, select it
                     this.clearSelections();
                     piece.isSelected = true;
-                    this.highlightPossibleMoves(piece);
+                    this.workoutPossibleMoves(piece);
                 } else if (selectedPiece !== null) {
                     this.tryMovePiece(coords.x, coords.y, selectedPiece);
                 }
 
                 this.$emit('updatePieceList', this.pieces, this.whiteToMove);
             },
-            highlightPossibleMoves(piece) {
+            workoutPossibleMoves(piece) {
                 this.possibleMoves = this.moveManager.getMovePositions(piece);
             },
             capturePiece(toCapture) {
                 toCapture.captured = true;
             },
             tryMovePiece(x, y, piece) {
-                //todo: check can move
-                let pieceOnTargetTile = this.getPiece(x, y);
+                if (this.canMoveHere(x, y)) {
+                    let pieceOnTargetTile = this.getPiece(x, y);
 
-                if (pieceOnTargetTile !== null) this.capturePiece(pieceOnTargetTile); // capture
-                this.movePieceTo(piece, x, y); // then move
+                    if (pieceOnTargetTile !== null) this.capturePiece(pieceOnTargetTile); // capture
+                    this.movePieceTo(piece, x, y); // then move
+                } else {
+                    this.clearSelections();
+                }
+            },
+            canMoveHere(x, y) {
+                if (this.possibleMoves.length > 0) {
+                    let possible = this.possibleMoves.filter(p => p.x === this.adjustToAbsolute(x) && p.y === this.adjustToAbsolute(y));
+                    return possible.length > 0;
+                }
+
+                return false;
             },
             movePieceTo(piece, x, y) {
                 let coords = this.adjustXYToAbsolute(x, y);
@@ -130,6 +144,11 @@
 
                 this.clearSelections();
                 this.whiteToMove = !this.whiteToMove;
+            },
+            adjustToAbsolute(p) {
+                if (this.pov === 0) {
+                    return 9 - p;
+                } else return p;
             },
             adjustXYToAbsolute(x, y) {
                 let coords = [x, y];
