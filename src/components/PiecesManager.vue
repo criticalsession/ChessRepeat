@@ -52,6 +52,7 @@
             reset(pieces, whiteToMove) {
                 this.pieces = pieces;
                 this.whiteToMove = whiteToMove;
+                this.possibleMoves = [];
             },
             getCoords64(p) {
                 p = p - 1; //make 0-based

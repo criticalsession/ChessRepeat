@@ -12,10 +12,12 @@ export default class Movement {
         this.piece = piece;
 
         let movePositions = [];
-        if (this.pt.isKing(this.piece)) movePositions = this.getKingMoves();
-        if (this.pt.isPawn(this.piece)) movePositions = this.getPawnMoves();
-        if (this.pt.isHorsey(this.piece)) movePositions = this.getHorseyMoves();
-        if (this.pt.isRook(this.piece)) movePositions = this.getCrossMoves();
+        if (this.pt.isKing(piece)) movePositions = this.getKingMoves();
+        if (this.pt.isPawn(piece)) movePositions = this.getPawnMoves();
+        if (this.pt.isHorsey(piece)) movePositions = this.getHorseyMoves();
+        if (this.pt.isRook(piece)) movePositions = this.getCrossMoves();
+        if (this.pt.isBishop(piece)) movePositions = this.getDiagonalMoves();
+        if (this.pt.isQueen(piece)) movePositions = [...this.getCrossMoves(), ...this.getDiagonalMoves()];
 
         return movePositions;
     }
@@ -97,6 +99,48 @@ export default class Movement {
             movePositions.push({ x: this.piece.positionX, y: y });
 
             if (this.theresAPieceOnTile(this.piece.positionX, y)) break;
+        }
+
+        return this.removeInvalid(movePositions);
+    }
+
+    getDiagonalMoves() {
+        let movePositions = [];
+
+        for (let inc = 1; inc <= 8; inc++) {
+            const newX = this.piece.positionX + inc;
+            const newY = this.piece.positionY + inc;
+
+            movePositions.push({ x: newX, y: newY });
+
+            if (this.theresAPieceOnTile(newX, newY )) break;
+        }
+
+        for (let inc = 1; inc <= 8; inc++) {
+            const newX = this.piece.positionX + inc;
+            const newY = this.piece.positionY - inc;
+
+            movePositions.push({ x: newX, y: newY });
+
+            if (this.theresAPieceOnTile(newX, newY )) break;
+        }
+
+        for (let inc = 1; inc <= 8; inc++) {
+            const newX = this.piece.positionX - inc;
+            const newY = this.piece.positionY + inc;
+
+            movePositions.push({ x: newX, y: newY });
+
+            if (this.theresAPieceOnTile(newX, newY )) break;
+        }
+
+        for (let inc = 1; inc <= 8; inc++) {
+            const newX = this.piece.positionX - inc;
+            const newY = this.piece.positionY - inc;
+
+            movePositions.push({ x: newX, y: newY });
+
+            if (this.theresAPieceOnTile(newX, newY )) break;
         }
 
         return this.removeInvalid(movePositions);
