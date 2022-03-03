@@ -159,6 +159,9 @@
 
                 return coords;
             },
+            initMoveManager() {
+                this.moveManager = new Movement(this.pov, this.activePieces);
+            },
         },
         computed: {
             selectedPiece() {
@@ -171,10 +174,15 @@
             },
         },
         watch: {
-
+            pov() {
+                this.initMoveManager();
+            },
+            activePieces() {
+                this.initMoveManager();
+            }
         },
         mounted() {
-            this.moveManager = new Movement();
+            this.initMoveManager();
         },
     };
 </script>

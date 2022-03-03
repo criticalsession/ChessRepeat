@@ -1,88 +1,143 @@
 import PieceType from './PieceType.js';
 
 export default class Movement {
+    constructor(pov, pieces) {
+        this.pov = pov;
+        this.pieces = pieces;
+        this.piece = null;
+        this.pt = new PieceType();
+    }
+
     getMovePositions(piece) {
-        const pt = new PieceType();
+        this.piece = piece;
+
         let movePositions = [];
-        if (pt.isPawn(piece)) movePositions = this.getPawnMove(pt, piece);
-        if (pt.isHorsey(piece)) movePositions = this.getHorseyMove(pt, piece);
+        if (this.pt.isKing(this.piece)) movePositions = this.getKingMoves();
+        if (this.pt.isPawn(this.piece)) movePositions = this.getPawnMoves();
+        if (this.pt.isHorsey(this.piece)) movePositions = this.getHorseyMoves();
+        if (this.pt.isRook(this.piece)) movePositions = this.getCrossMoves();
 
         return movePositions;
     }
 
-    getPawnMove(pt, piece) {
+    getPawnMoves() {
         let movePositions = [];
 
-        if (pt.isWhite(piece)) {
-            if (piece.positionY === 7) {
+        if (this.pt.isWhite(this.piece)) {
+            if (!this.theresAPieceOnTile(this.piece.positionX, this.piece.positionY - 1)) {
                 movePositions.push({
-                    x: piece.positionX,
-                    y: piece.positionY - 2
+                    x: this.piece.positionX,
+                    y: this.piece.positionY - 1
                 });
-            }
 
-            movePositions.push({
-                x: piece.positionX,
-                y: piece.positionY - 1
-            });
+                if (!this.theresAPieceOnTile(this.piece.positionX, this.piece.positionY - 2) && this.piece.positionY === 7) {
+                    movePositions.push({
+                        x: this.piece.positionX,
+                        y: this.piece.positionY - 2
+                    });
+                }
+            }
         }
         else {
-            if (piece.positionY === 2) {
+            if (!this.theresAPieceOnTile(this.piece.positionX, this.piece.positionY + 1)) {
                 movePositions.push({
-                    x: piece.positionX,
-                    y: piece.positionY + 2
+                    x: this.piece.positionX,
+                    y: this.piece.positionY + 1
                 });
-            }
 
-            movePositions.push({
-                x: piece.positionX,
-                y: piece.positionY + 1
-            });
+                if (!this.theresAPieceOnTile(this.piece.positionX, this.piece.positionY + 2) && this.piece.positionY === 2) {
+                    movePositions.push({
+                        x: this.piece.positionX,
+                        y: this.piece.positionY + 2
+                    });
+                }
+            }
         }
 
         return movePositions;
     }
 
-    getHorseyMove(pt, piece) {
+    getHorseyMoves() {
         let movePositions = [];
 
-        if (piece.positionX > 1) {
-            if (piece.positionY <= 6)
-                movePositions.push({ x: piece.positionX - 1, y: piece.positionY + 2 });
-            
-            if (piece.positionY >= 3)
-                movePositions.push({ x: piece.positionX - 1, y: piece.positionY - 2 });
+        movePositions.push({ x: this.piece.positionX - 1, y: this.piece.positionY + 2 });
+        movePositions.push({ x: this.piece.positionX - 1, y: this.piece.positionY - 2 });
+        movePositions.push({ x: this.piece.positionX - 2, y: this.piece.positionY + 1 });
+        movePositions.push({ x: this.piece.positionX - 2, y: this.piece.positionY - 1 });
+        movePositions.push({ x: this.piece.positionX + 1, y: this.piece.positionY - 2 });
+        movePositions.push({ x: this.piece.positionX + 1, y: this.piece.positionY + 2 });
+        movePositions.push({ x: this.piece.positionX + 2, y: this.piece.positionY + 1 });
+        movePositions.push({ x: this.piece.positionX + 2, y: this.piece.positionY - 1 });
 
-            if (piece.positionX > 2) {
-                if (piece.positionY <= 7)
-                    movePositions.push({ x: piece.positionX - 2, y: piece.positionY + 1 });
-                
-                if (piece.positionY >= 2)
-                    movePositions.push({ x: piece.positionX - 2, y: piece.positionY - 1 });
-            }
-        }
-
-        if (piece.positionX < 8) {
-            if (piece.positionY >= 3)
-                movePositions.push({ x: piece.positionX + 1, y: piece.positionY - 2 });
-            
-            if (piece.positionY <= 6)
-                movePositions.push({ x: piece.positionX + 1, y: piece.positionY + 2 });
-
-            if (piece.positionX < 7) {
-                if (piece.positionY <= 7)
-                    movePositions.push({ x: piece.positionX + 2, y: piece.positionY + 1 });
-                
-                if (piece.positionY >= 2)
-                    movePositions.push({ x: piece.positionX + 2, y: piece.positionY - 1 });
-            }
-        }
-
-        return movePositions;
+        return this.removeInvalid(movePositions);
     }
 
-    shouldPromote(piece) {
-        const pt = new PieceType();
-        return (pt.isPawn(piece)) && ((pt.isWhite(piece) && piece.positionY === 1) || (!pt.isWhite(piece) && piece.positionY === 8));
+    getCrossMoves() {
+        let movePositions = [];
+
+        for (let x = this.piece.positionX + 1; x <= 8; x++) {
+            movePositions.push({ x: x, y: this.piece.positionY });
+
+            if (this.theresAPieceOnTile(x, this.piece.positionY)) break;
+        }
+
+        for (let x = this.piece.positionX - 1; x >= 1; x--) {
+            movePositions.push({ x: x, y: this.piece.positionY });
+
+            if (this.theresAPieceOnTile(x, this.piece.positionY)) break;
+        }
+
+        for (let y = this.piece.positionY + 1; y <= 8; y++) {
+            movePositions.push({ x: this.piece.positionX, y: y });
+
+            if (this.theresAPieceOnTile(this.piece.positionX, y)) break;
+        }
+
+        for (let y = this.piece.positionY - 1; y >= 1; y--) {
+            movePositions.push({ x: this.piece.positionX, y: y });
+
+            if (this.theresAPieceOnTile(this.piece.positionX, y)) break;
+        }
+
+        return this.removeInvalid(movePositions);
+    }
+
+    getKingMoves() {
+        let movePositions = [];
+
+        for (let x = -1; x <= 1; x++) {
+            for (let y = -1; y <= 1; y++) {
+                if (x !== 0 || y !== 0) {
+                    movePositions.push({ x: this.piece.positionX + x, y: this.piece.positionY + y });
+                }
+            }
+        }
+
+        return this.removeInvalid(movePositions);
+    }
+
+    theresAPieceOnTile(x, y) {
+        return this.getPieceOnTile(x, y) !== null;
+    }
+
+    removeInvalid(movePositions) {
+        return movePositions.filter(m => m.x >= 1 && m.x <= 8 && m.y >= 1 && m.y <= 8);
+    }
+
+    shouldPromote() {
+        return (this.pt.isPawn(this.piece)) && ((this.pt.isWhite(this.piece) && this.piece.positionY === 1) || (!this.pt.isWhite(this.piece) && this.piece.positionY === 8));
+    }
+
+    adjustToAbsolute(coord) {
+        if (this.pov === 0) {
+            return 9 - coord;
+        } else return coord;
+    }
+
+    getPieceOnTile(x, y) {
+        const pieceOnTile = this.pieces.filter(p => p.positionX === x && p.positionY === y);
+
+        if (pieceOnTile.length > 0) return pieceOnTile[0];
+        else return null;
     }
 }
