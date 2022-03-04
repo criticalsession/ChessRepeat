@@ -72,8 +72,8 @@ export default class Movement {
         return this.pieces.filter(p => p.type === PieceType.KING);
     }
 
-    getMyKing() {
-        return this.getKings().filter(p => p.color === this.piece.color)[0];
+    getMyKing(color) {
+        return this.getKings().filter(p => p.color === color)[0];
     }
 
     getPawnMoves() {
@@ -110,7 +110,7 @@ export default class Movement {
             }
         }
 
-        return movePositions;
+        return this.removeInvalid(movePositions);
     }
 
     getHorseyMoves(checkForChecks) {
@@ -197,8 +197,6 @@ export default class Movement {
             }
         }
 
-        console.table(movePositions);
-
         return this.removeInvalid(movePositions);
     }
 
@@ -210,10 +208,29 @@ export default class Movement {
         movePositions = movePositions.filter(m => m.x >= 1 && m.x <= 8 && m.y >= 1 && m.y <= 8); //filter out of bounds
 
         if (checkForChecks !== false) {
-            console.log("todo: check for checks");
-        }
+            let filteredPositions = [];
+            let kingChecker = new Movement(this.pov, []);
 
-        return movePositions;
+            // will this move put me in check?
+            movePositions.forEach(coord => {
+                let simPieces = this.pieces.filter(p => p !== this.piece);
+
+                simPieces.push({ 
+                    positionX: coord.x,
+                    positionY: coord.y,
+                    type: this.piece.type,
+                    color: this.piece.color,
+                    isInCheck: this.piece.isInCheck,
+                });
+
+                kingChecker.pieces = simPieces;
+                const myKing = kingChecker.getMyKing(this.piece.color);
+
+                if (!kingChecker.isKingInCheck(myKing)) filteredPositions.push(coord);
+            })
+
+            return filteredPositions;
+        } else return movePositions;
     }
 
     shouldPromote() {
