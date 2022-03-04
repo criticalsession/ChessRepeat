@@ -80,6 +80,7 @@ export default class FENReader {
             previousPosition: [],
             movedOnce: false,
             captured: false,
+            isInCheck: false,
         }
     }
 }

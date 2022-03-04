@@ -1,10 +1,11 @@
 <template>
     <div class="tile-target" 
-         v-bind:class="{ 'selected' : isSelected(), 'isPrevious' : isPrevious(), 'isLastMoved' : isLastMoved(), 'canCapture' : canCaptureHere }"
+         v-bind:class="{ 'selected' : isSelected(), 'isPrevious' : isPrevious(), 'isLastMoved' : isLastMoved(), 'canCapture' : canCaptureHere, 'inCheck' : isInCheck() }"
          v-on:click="selectTile"
          v-bind:style="getPosition()">
+         <div class="check-glow">&nbsp;</div>
          <div 
-            v-if="canMoveHere && getPieceOnTile() === null"
+            v-if="canMoveHere && pieceOnTile === null"
             class="possible-move" 
             v-bind:style="possibleMoveStyle()">
                 <i class="fa-solid fa-circle"></i>
@@ -58,9 +59,11 @@
                 return found.length > 0;
             },
             isLastMoved() {
-                let found = this.pieces.filter(p => p.positionX === this.absoluteX && p.positionY === this.absoluteY && p.lastMoved);
+                if (!this.isInCheck()) {
+                    let found = this.pieces.filter(p => p.positionX === this.absoluteX && p.positionY === this.absoluteY && p.lastMoved);
 
-                return found.length > 0;
+                    return found.length > 0;
+                }
             },
             isSelected() {
                 if (this.pieceIsSelected === true) {
@@ -68,6 +71,9 @@
 
                     return found.length > 0;
                 }
+            },
+            isInCheck() {
+                return this.getPieceOnTile() !== null && this.getPieceOnTile().isInCheck === true;
             },
             adjustToAbsolute(p) {
                 if (this.pov === 0) {
@@ -100,6 +106,9 @@
 
                 return this.canMoveHere && pieceOnTile !== null && pieceOnTile.color !== this.colorPlaying;
             },
+            pieceOnTile() {
+                return this.getPieceOnTile();
+            }
         },
         watch: {
 
@@ -135,8 +144,21 @@
         }
 
         &.canCapture {
-            background-color: red !important;
+            background-color: red;
             opacity: 0.8;
+        }
+
+        .check-glow {
+            width: 100%;
+            text-align: center;
+            background-color: #db2800;
+            height: 100%;
+            display: none;
+            box-shadow: 0 0 36px 3px #db2800;
+        }
+
+        &.inCheck .check-glow {
+            display: block;
         }
 
         .possible-move {

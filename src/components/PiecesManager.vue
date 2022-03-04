@@ -106,6 +106,7 @@
             },
             capturePiece(toCapture) {
                 toCapture.captured = true;
+                this.moveManager.pieces = this.activePieces;
             },
             tryMovePiece(x, y, piece) {
                 if (this.canMoveHere(x, y)) {
@@ -145,6 +146,7 @@
 
                 this.clearSelections();
                 this.whiteToMove = !this.whiteToMove;
+                this.markChecks();
             },
             adjustToAbsolute(p) {
                 if (this.pov === 0) {
@@ -162,6 +164,14 @@
             },
             initMoveManager() {
                 this.moveManager = new Movement(this.pov, this.activePieces);
+            },
+            getKings() {
+                return this.pieces.filter(p => p.type === PieceType.KING);
+            },
+            markChecks() {
+                this.getKings().forEach(king => {
+                    king.isInCheck = this.moveManager.isKingInCheck(king);
+                });
             },
         },
         computed: {

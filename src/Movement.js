@@ -22,6 +22,28 @@ export default class Movement {
         return movePositions;
     }
 
+    isKingInCheck(piece) {
+        this.piece = piece;
+
+        let inCheck = false;
+
+        if (this.pt.isKing(piece)) {
+            let positionRay = [];
+            
+            // check knight checks
+            positionRay = this.getHorseyMoves();
+
+            positionRay.forEach(coord => {
+                const pieceOnTile = this.getPieceOnTile(coord.x, coord.y);
+                if (pieceOnTile !== null && pieceOnTile.color !== piece.color && this.pt.isHorsey(pieceOnTile)) {
+                    inCheck = true;
+                }
+            });
+        }
+
+        return inCheck;
+    }
+
     getPawnMoves() {
         let movePositions = [];
 
