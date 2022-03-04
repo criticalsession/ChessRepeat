@@ -49,7 +49,7 @@
                             img = 'rook';
                             break;
                         case PieceType.QUEEN:
-                            img = 'queen';
+                            img = 'queen'; 
                             break;
                         case PieceType.KING:
                             img = 'king';
