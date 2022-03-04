@@ -56,7 +56,7 @@
                             break;
                     }
 
-                    if (this.piece.color === 1) img += '_w';
+                    if (this.piece.color === PieceType.WHITE) img += '_w';
                     img += '.png';
                     return img;
                 }

@@ -5,6 +5,8 @@ export default class PieceType {
     static ROOK = 4;
     static QUEEN = 5;
     static KING = 6;
+    static WHITE = 1;
+    static BLACK = 0;
 
     isPawn(p) {
         return p.type === PieceType.PAWN;
@@ -28,9 +30,5 @@ export default class PieceType {
 
     isKing(p) {
         return p.type === PieceType.KING;
-    }
-
-    isWhite(p) {
-        return p.color === 1;
     }
 }

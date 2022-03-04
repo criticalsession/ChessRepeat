@@ -22,32 +22,64 @@ export default class Movement {
         return movePositions;
     }
 
-    isKingInCheck(piece) {
-        this.piece = piece;
+    isKingInCheck(king) {
+        this.piece = king;
 
         let inCheck = false;
 
-        if (this.pt.isKing(piece)) {
+        if (this.pt.isKing(king)) {
             let positionRay = [];
             
             // check knight checks
-            positionRay = this.getHorseyMoves();
+            positionRay = this.getHorseyMoves(false);
 
             positionRay.forEach(coord => {
                 const pieceOnTile = this.getPieceOnTile(coord.x, coord.y);
-                if (pieceOnTile !== null && pieceOnTile.color !== piece.color && this.pt.isHorsey(pieceOnTile)) {
+                if (pieceOnTile !== null && pieceOnTile.color !== king.color && this.pt.isHorsey(pieceOnTile)) {
                     inCheck = true;
                 }
             });
+
+            if (!inCheck) {
+                // check cross checks
+                positionRay = this.getCrossMoves(false);
+
+                positionRay.filter(p => p.pieceOnTile).forEach(coord => {
+                    const pieceOnTile = this.getPieceOnTile(coord.x, coord.y);
+                    if (pieceOnTile !== null && pieceOnTile.color !== king.color && (this.pt.isQueen(pieceOnTile) || this.pt.isRook(pieceOnTile))) {
+                        inCheck = true;
+                    }
+                });
+            }
+
+            if (!inCheck) {
+                // check diagonal checks
+                positionRay = this.getDiagonalMoves(false);
+
+                positionRay.filter(p => p.pieceOnTile).forEach(coord => {
+                    const pieceOnTile = this.getPieceOnTile(coord.x, coord.y);
+                    if (pieceOnTile !== null && pieceOnTile.color !== king.color && (this.pt.isQueen(pieceOnTile) || this.pt.isBishop(pieceOnTile))) {
+                        inCheck = true;
+                    }
+                });
+            }
         }
 
         return inCheck;
     }
 
+    getKings() {
+        return this.pieces.filter(p => p.type === PieceType.KING);
+    }
+
+    getMyKing() {
+        return this.getKings().filter(p => p.color === this.piece.color)[0];
+    }
+
     getPawnMoves() {
         let movePositions = [];
 
-        if (this.pt.isWhite(this.piece)) {
+        if (this.piece.color === PieceType.WHITE) {
             if (!this.theresAPieceOnTile(this.piece.positionX, this.piece.positionY - 1)) {
                 movePositions.push({
                     x: this.piece.positionX,
@@ -81,7 +113,7 @@ export default class Movement {
         return movePositions;
     }
 
-    getHorseyMoves() {
+    getHorseyMoves(checkForChecks) {
         let movePositions = [];
 
         movePositions.push({ x: this.piece.positionX - 1, y: this.piece.positionY + 2 });
@@ -93,79 +125,62 @@ export default class Movement {
         movePositions.push({ x: this.piece.positionX + 2, y: this.piece.positionY + 1 });
         movePositions.push({ x: this.piece.positionX + 2, y: this.piece.positionY - 1 });
 
-        return this.removeInvalid(movePositions);
+        return this.removeInvalid(movePositions, checkForChecks);
     }
 
-    getCrossMoves() {
+    getCrossMoves(checkForChecks) {
         let movePositions = [];
 
         for (let x = this.piece.positionX + 1; x <= 8; x++) {
-            movePositions.push({ x: x, y: this.piece.positionY });
+            let newPosition = { x: x, y: this.piece.positionY, pieceOnTile: false };
+            movePositions.push(newPosition);
 
-            if (this.theresAPieceOnTile(x, this.piece.positionY)) break;
+            if (this.theresAPieceOnTile(newPosition.x, newPosition.y)) { newPosition.pieceOnTile = true; break; }
         }
 
         for (let x = this.piece.positionX - 1; x >= 1; x--) {
-            movePositions.push({ x: x, y: this.piece.positionY });
+            let newPosition = { x: x, y: this.piece.positionY, pieceOnTile: false };
+            movePositions.push(newPosition);
 
-            if (this.theresAPieceOnTile(x, this.piece.positionY)) break;
+            if (this.theresAPieceOnTile(newPosition.x, newPosition.y)) { newPosition.pieceOnTile = true; break; }
         }
 
         for (let y = this.piece.positionY + 1; y <= 8; y++) {
-            movePositions.push({ x: this.piece.positionX, y: y });
+            let newPosition = { x: this.piece.positionX, y: y, pieceOnTile: false };
+            movePositions.push(newPosition);
 
-            if (this.theresAPieceOnTile(this.piece.positionX, y)) break;
+            if (this.theresAPieceOnTile(newPosition.x, newPosition.y)) { newPosition.pieceOnTile = true; break; }
         }
 
         for (let y = this.piece.positionY - 1; y >= 1; y--) {
-            movePositions.push({ x: this.piece.positionX, y: y });
+            let newPosition = { x: this.piece.positionX, y: y, pieceOnTile: false };
+            movePositions.push(newPosition);
 
-            if (this.theresAPieceOnTile(this.piece.positionX, y)) break;
+            if (this.theresAPieceOnTile(newPosition.x, newPosition.y)) { newPosition.pieceOnTile = true; break; }
         }
 
-        return this.removeInvalid(movePositions);
+        return this.removeInvalid(movePositions, checkForChecks);
     }
 
-    getDiagonalMoves() {
+    getDiagonalMoves(checkForChecks) {
         let movePositions = [];
 
-        for (let inc = 1; inc <= 8; inc++) {
-            const newX = this.piece.positionX + inc;
-            const newY = this.piece.positionY + inc;
+        [1, -1].forEach(xMult => {
+            [1, -1].forEach(yMult => {
+                for (let inc = 1; inc <= 8; inc++) {
+                    let newPosition = {
+                        x: this.piece.positionX + (inc * xMult),
+                        y: this.piece.positionY + (inc * yMult),
+                        pieceOnTile: false };
+        
+                    movePositions.push(newPosition);
+        
+                    if (this.theresAPieceOnTile(newPosition.x, newPosition.y )) { newPosition.pieceOnTile = true; break; }
+                }
+            });
+        });
 
-            movePositions.push({ x: newX, y: newY });
-
-            if (this.theresAPieceOnTile(newX, newY )) break;
-        }
-
-        for (let inc = 1; inc <= 8; inc++) {
-            const newX = this.piece.positionX + inc;
-            const newY = this.piece.positionY - inc;
-
-            movePositions.push({ x: newX, y: newY });
-
-            if (this.theresAPieceOnTile(newX, newY )) break;
-        }
-
-        for (let inc = 1; inc <= 8; inc++) {
-            const newX = this.piece.positionX - inc;
-            const newY = this.piece.positionY + inc;
-
-            movePositions.push({ x: newX, y: newY });
-
-            if (this.theresAPieceOnTile(newX, newY )) break;
-        }
-
-        for (let inc = 1; inc <= 8; inc++) {
-            const newX = this.piece.positionX - inc;
-            const newY = this.piece.positionY - inc;
-
-            movePositions.push({ x: newX, y: newY });
-
-            if (this.theresAPieceOnTile(newX, newY )) break;
-        }
-
-        return this.removeInvalid(movePositions);
+        return this.removeInvalid(movePositions, checkForChecks);
     }
 
     getKingMoves() {
@@ -173,11 +188,16 @@ export default class Movement {
 
         for (let x = -1; x <= 1; x++) {
             for (let y = -1; y <= 1; y++) {
-                if (x !== 0 || y !== 0) {
-                    movePositions.push({ x: this.piece.positionX + x, y: this.piece.positionY + y });
+                if (!(x === 0 && y === 0)) {
+                    let newPosition = { x: this.piece.positionX + x, y: this.piece.positionY + y, pieceOnTile: false };
+                    movePositions.push(newPosition);
+
+                    if (this.theresAPieceOnTile(newPosition.x, newPosition.y)) { newPosition.pieceOnTile = true; }
                 }
             }
         }
+
+        console.table(movePositions);
 
         return this.removeInvalid(movePositions);
     }
@@ -186,12 +206,18 @@ export default class Movement {
         return this.getPieceOnTile(x, y) !== null;
     }
 
-    removeInvalid(movePositions) {
-        return movePositions.filter(m => m.x >= 1 && m.x <= 8 && m.y >= 1 && m.y <= 8);
+    removeInvalid(movePositions, checkForChecks) {
+        movePositions = movePositions.filter(m => m.x >= 1 && m.x <= 8 && m.y >= 1 && m.y <= 8); //filter out of bounds
+
+        if (checkForChecks !== false) {
+            console.log("todo: check for checks");
+        }
+
+        return movePositions;
     }
 
     shouldPromote() {
-        return (this.pt.isPawn(this.piece)) && ((this.pt.isWhite(this.piece) && this.piece.positionY === 1) || (!this.pt.isWhite(this.piece) && this.piece.positionY === 8));
+        return (this.pt.isPawn(this.piece)) && ((this.piece.color === PieceType.WHITE && this.piece.positionY === 1) || (this.piece.color === PieceType.BLACK && this.piece.positionY === 8));
     }
 
     adjustToAbsolute(coord) {

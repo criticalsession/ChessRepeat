@@ -53,6 +53,10 @@
                 this.pieces = pieces;
                 this.whiteToMove = whiteToMove;
                 this.possibleMoves = [];
+
+                setTimeout(() => {
+                    this.markChecks();
+                }, 1);
             },
             getCoords64(p) {
                 p = p - 1; //make 0-based
@@ -83,7 +87,7 @@
                 });
             },
             pieceCorrectColor(piece) {
-                return ((piece.color === 0 && !this.whiteToMove) || (piece.color === 1 && this.whiteToMove));
+                return ((piece.color === PieceType.BLACK && !this.whiteToMove) || (piece.color === PieceType.WHITE && this.whiteToMove));
             },
             tileClicked(p64) {
                 const coords = this.getCoords64(p64);
