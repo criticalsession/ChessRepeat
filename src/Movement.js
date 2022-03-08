@@ -27,6 +27,10 @@ export default class Movement {
 
         let inCheck = false;
 
+        /* eslint-disable no-debugger */
+        //if (king === undefined) debugger;
+        /* eslint-enable no-debugger */
+
         if (this.pt.isKing(king)) {
             let positionRay = [];
             
@@ -246,26 +250,45 @@ export default class Movement {
         movePositions = movePositions.filter(m => m.x >= 1 && m.x <= 8 && m.y >= 1 && m.y <= 8); //filter out of bounds
 
         if (checkForChecks !== false) {
+            const myColor = this.piece.color;
+
             let filteredPositions = [];
             let kingChecker = new Movement(this.pov, []);
 
             // will this move put me in check?
             movePositions.forEach(coord => {
-                let simPieces = this.pieces.filter(p => p !== this.piece);
+                let checkPosition = true;
+                let captureFirst = false;
 
-                simPieces.push({ 
-                    positionX: coord.x,
-                    positionY: coord.y,
-                    type: this.piece.type,
-                    color: this.piece.color,
-                    isInCheck: this.piece.isInCheck,
-                });
+                if (coord.pieceOnTile) {
+                    const pieceOnTile = this.getPieceOnTile(coord.x, coord.y);
+                    if (pieceOnTile.color === myColor)
+                        checkPosition = false; 
+                    else
+                        captureFirst = true;
+                }
 
-                kingChecker.pieces = simPieces;
-                const myKing = kingChecker.getMyKing(this.piece.color);
+                if (checkPosition) {
+                    let simPieces = this.pieces.filter(p => p !== this.piece);
 
-                if (!kingChecker.isKingInCheck(myKing)) filteredPositions.push(coord);
-            })
+                    if (captureFirst) {
+                        simPieces = simPieces.filter(p => !(p.positionX === coord.x && p.positionY === coord.y));
+                    }
+
+                    simPieces.push({ 
+                        positionX: coord.x,
+                        positionY: coord.y,
+                        type: this.piece.type,
+                        color: myColor,
+                        isInCheck: this.piece.isInCheck,
+                    });
+
+                    kingChecker.pieces = simPieces;
+                    const myKing = kingChecker.getMyKing(myColor);
+
+                    if (!kingChecker.isKingInCheck(myKing)) filteredPositions.push(coord);
+                }
+            });
 
             return filteredPositions;
         } else return movePositions;
