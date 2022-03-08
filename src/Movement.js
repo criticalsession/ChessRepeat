@@ -93,6 +93,25 @@ export default class Movement {
                     });
                 }
             }
+
+            //diagonals
+            if (this.piece.positionX > 1) {
+                const newPos = [this.piece.positionX - 1, this.piece.positionY - 1];
+                const pieceOnTile = this.getPieceOnTile(newPos[0], newPos[1]);
+
+                if (pieceOnTile !== null && pieceOnTile.color !== PieceType.WHITE) {
+                    movePositions.push({ x: newPos[0], y: newPos[1], pieceOnTile: true });
+                }
+            }
+
+            if (this.piece.positionX < 8) {
+                const newPos = [this.piece.positionX + 1, this.piece.positionY - 1];
+                const pieceOnTile = this.getPieceOnTile(newPos[0], newPos[1]);
+
+                if (pieceOnTile !== null && pieceOnTile.color !== PieceType.WHITE) {
+                    movePositions.push({ x: newPos[0], y: newPos[1], pieceOnTile: true });
+                }
+            }
         }
         else {
             if (!this.theresAPieceOnTile(this.piece.positionX, this.piece.positionY + 1)) {
@@ -106,6 +125,25 @@ export default class Movement {
                         x: this.piece.positionX,
                         y: this.piece.positionY + 2
                     });
+                }
+            }
+
+            //diagonals
+            if (this.piece.positionX > 1) {
+                const newPos = [this.piece.positionX - 1, this.piece.positionY + 1];
+                const pieceOnTile = this.getPieceOnTile(newPos[0], newPos[1]);
+
+                if (pieceOnTile !== null && pieceOnTile.color !== PieceType.BLACK) {
+                    movePositions.push({ x: newPos[0], y: newPos[1], pieceOnTile: true });
+                }
+            }
+
+            if (this.piece.positionX < 8) {
+                const newPos = [this.piece.positionX + 1, this.piece.positionY + 1];
+                const pieceOnTile = this.getPieceOnTile(newPos[0], newPos[1]);
+
+                if (pieceOnTile !== null && pieceOnTile.color !== PieceType.BLACK) {
+                    movePositions.push({ x: newPos[0], y: newPos[1], pieceOnTile: true });
                 }
             }
         }
