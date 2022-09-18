@@ -11,4 +11,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - This CHANGELOG file.
 - A new default FEN showing a mate in 3 for White.
-- To-Do list in README.md.
+- "Working On" list in README.md.
